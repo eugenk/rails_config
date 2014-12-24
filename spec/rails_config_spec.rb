@@ -163,6 +163,24 @@ describe RailsConfig do
     end
 
     it "should merge arrays from multiple configs" do
+      config.arraylist1.size.should eq 3
+      config.arraylist2.inner.size.should eq 3
+    end
+  end
+
+  context "Deep Merging (old behavior)" do
+    let(:config) do
+      files = ["#{fixture_path}/deep_merge/config1.yml", "#{fixture_path}/deep_merge/config2.yml"]
+      RailsConfig.overwrite_arrays = false
+      RailsConfig.load_files(files)
+    end
+
+    it "should merge hashes from multiple configs" do
+      config.inner.marshal_dump.keys.size.should eq 3
+      config.inner2.inner2_inner.marshal_dump.keys.size.should eq 3
+    end
+
+    it "should merge arrays from multiple configs" do
       config.arraylist1.size.should eq 6
       config.arraylist2.inner.size.should eq 6
     end

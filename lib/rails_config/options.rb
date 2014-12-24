@@ -2,6 +2,7 @@ require 'ostruct'
 module RailsConfig
   class Options < OpenStruct
     include Enumerable
+    attr_accessor :overwrite_arrays
 
     def keys()   marshal_dump.keys;   end
     def empty?() marshal_dump.empty?; end
@@ -23,7 +24,7 @@ module RailsConfig
         key.to_s.split('.').reverse.each do |element|
           hash = {element => hash}
         end
-        DeepMerge.deep_merge!(hash, conf, :preserve_unmergeables => false)
+        DeepMerge.deep_merge!(hash, conf, :preserve_unmergeables => false, :overwrite_arrays => overwrite_arrays)
       end
 
       merge!(conf[RailsConfig.const_name] || {})
@@ -40,7 +41,7 @@ module RailsConfig
         if conf.empty?
           conf = source_conf
         else
-          DeepMerge.deep_merge!(source_conf, conf, :preserve_unmergeables => false)
+          DeepMerge.deep_merge!(source_conf, conf, :preserve_unmergeables => false, :overwrite_arrays => overwrite_arrays)
         end
       end
 

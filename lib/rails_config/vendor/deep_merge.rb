@@ -25,6 +25,8 @@ module DeepMerge
   #      Set to true to skip any unmergeable elements from source
   #   :knockout_prefix        DEFAULT: nil
   #      Set to string value to signify prefix which deletes elements from existing element
+  #   :overwrite_arrays       DEFAULT: true
+  #      Set to true to overwrite arrays intead of merging elements
   #   :sort_merged_arrays     DEFAULT: false
   #      Set to true to sort all arrays that are merged together
   #   :unpack_arrays          DEFAULT: nil
@@ -59,6 +61,7 @@ module DeepMerge
   def DeepMerge.deep_merge!(source, dest, options = {})
     # turn on this line for stdout debugging text
     merge_debug = options[:merge_debug] || false
+    overwrite_arrays = options[:overwrite_arrays] || false
     overwrite_unmergeable = !options[:preserve_unmergeables]
     knockout_prefix = options[:knockout_prefix] || nil
     if knockout_prefix == ""; raise InvalidParameter, "knockout_prefix cannot be an empty string in deep_merge!"; end
@@ -127,7 +130,9 @@ module DeepMerge
           puts if merge_debug
         end
         puts "#{di} merging arrays: #{source.inspect} :: #{dest.inspect}" if merge_debug
-        dest = dest | source
+        unless overwrite_arrays
+          dest = dest | source
+        end
         if sort_merged_arrays; dest.sort!; end
       elsif overwrite_unmergeable
         puts "#{di} overwriting dest: #{source.inspect} -over-> #{dest.inspect}" if merge_debug
